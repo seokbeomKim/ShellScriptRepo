@@ -1,0 +1,16 @@
+#!/bin/zsh
+function check_backupFile {
+    echo -n "Check file named 'wordlist-backup'    : "; 
+    if [ -f "$PWD/wordlist-backup" ]; then
+    	echo "OK";
+	echo "make backupfile for current wordlist";
+	cp $PWD/wordlist $PWD/wordlist-$(date +"%d%m%y%H%M");
+    else
+	echo "No";
+	echo "ERROR: No wordlist backup file. Initializing...";
+	cp $PWD/wordlist $PWD/wordlist-backup;
+    fi
+}
+
+echo "Start test English words";
+check_backupFile
