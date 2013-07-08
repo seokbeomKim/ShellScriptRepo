@@ -13,7 +13,16 @@ function check_backupFile {
     fi
 }
 
-echo "Start test English words";
+echo "Start test English words" ; 
+echo "Check inputed options"
+if [ -n $# ]; then
+    case $@ in
+	clear)
+	    echo "Clear wordlist"
+	    rm wordlist-??????????;
+	    exit 0;
+    esac
+fi 
 check_backupFile
 while true;
 do
@@ -24,20 +33,31 @@ do
 
     if [ -z $index ]; then
 	echo "End of Test.";
+	exit 0;
     else
-	echo "No.$index";
-	cat wordlist | sed -n "$randnum"p;
-	read answer
-	case $answer in
-	    [yY]* ) 
-		cat wordlist | sed -e "$randnum"d > wordlist
-		;;
-	    [nN]* )
-		sdcv $(cat wordlist | sed -n "$randnum"p)
-		;;
-	    [qQ]* )
-		echo "Quit";
-		exit 0;
-	esac
+	echo -e "\e[00;33mNo.$index\e[00m";
+	cat wordlist | sed -ne "$randnum"p;
+	while true; 
+	do
+	    echo -en "\e[00;32m(y/n/c) : \e[00m"
+	    read answer
+	    case $answer in
+		[cC]* )
+		    sdcv $(cat wordlist | sed -n "$randnum"p)
+		    continue
+		    ;;
+		[yY]* ) 
+		    cat wordlist | sed -e "$randnum"d > temp
+		    mv temp wordlist
+		    break
+		    ;;
+		[nN]* )
+		    sdcv $(cat wordlist | sed -n "$randnum"p)
+		    break;;
+		[qQ]* )
+		    echo "Quit";
+		    exit 0;
+	    esac
+	done
     fi
 done
