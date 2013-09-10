@@ -1,0 +1,6 @@
+This script is from here: https://blinkeye.ch/dokuwiki/doku.php/projects/mkstage4
+
+Description:
+mkstage4 is a bash script to backup a GNU/Linux installation. At the moment it's aimed for a Gentoo GNU/Linux installation - although it can be customised easily for any other distribution as well. The resulting backup file is called a stage4 (meaning a full system backup).
+
+Please look around below link.
