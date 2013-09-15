@@ -1,0 +1,26 @@
+background no
+out_to_console yes
+out_to_x no
+update_interval 0.3
+total_run_times 0
+use_spacer none
+no_buffers yes
+double_buffer yes
+
+TEXT
+[STATE] \
+^pa(40)\
+^fg(\#6DBCDB)^i(/home/chaoxifer/themes/stlarch_icons-1.2/vol1.xbm)^fg()^p(10)\
+^fg(\#D7DADB)${exec amixer get PCM -M | grep -oE "[[:digit:]]*%" | head -1}^fg()\
+^pa(90)\
+^fg(\#6DBCDB)^i(/home/chaoxifer/themes/stlarch_icons-1.2/cpu5.xbm)^fg()^p(10)\
+^fg(\#D7DADB)${cpu cpu0}\
+^pa(125)%\
+^fg(\#6DBCDB)^pa(150)^i(/home/chaoxifer/themes/stlarch_icons-1.2/mem4.xbm)^fg()^p(10)^fg(\#D7DADB)$mem^p(5)/^p(5)$memmax^fg() ($memperc%)\
+^fg(\#6DBCDB)^pa(300)^i(/home/chaoxifer/themes/stlarch_icons-1.2/file2.xbm)^fg()^p(10)\
+^fg(\#FFFFFF)root^fg()^p(5)^fg(\#D7DADB)${fs_used /}/${fs_size /}^fg()\
+^fg(\#FFFFFF)^p(5)home^fg()^p(5)^fg(\#D7DADB)${fs_used /home}/${fs_size /home}^fg()\
+^fg(\#6DBCDB)^p(20)^i(/home/chaoxifer/themes/stlarch_icons-1.2/clock1.xbm)^fg()^p(10)^fg(\#D7DADB)${time %H:%M[%m%d]}^fg()\
+^fg(\#6DBCDB)^p(20)^i(/home/chaoxifer/themes/stlarch_icons-1.2/bstack.xbm)^fg()^p(10)^fg(\#D7DADB)${uptime}\
+^fg(\#6DBCDB)^pa(740)^i(/home/chaoxifer/themes/stlarch_icons-1.2/wireless1.xbm)^fg()\
+^pa(760)^fg(\#D7DADB)${wireless_essid wlp2s6}\

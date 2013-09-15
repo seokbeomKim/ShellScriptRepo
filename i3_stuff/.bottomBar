@@ -1,0 +1,27 @@
+#!/bin/bash
+while true; 
+do
+    cat /home/chaoxifer/barfifo >/dev/null
+    echo -en "^fg(#e74c3c)CURRENT PROCESS: ^fg()"
+    currentWorkspace=$(xprop _NET_CURRENT_DESKTOP -root | sed -e 's/^.* = //')
+    
+    idFocusedWindow=$(wmctrl -l -p | sed -n "/  $currentWorkspace/p" | tail -1 | cut -d ' ' -f 1)
+    index=0
+    IFS=$'\n'
+    for list in `wmctrl -l -p | sort | sed -n "/  $currentWorkspace/p"`;
+    do
+	output=$(echo $list | sed -e 's/^.* beom-lab //' | head -c 50);
+	let index=$index+1;
+	ppid=$(echo $list | cut -d ' ' -f 1);
+	if [ "$ppid" == "$idFocusedWindow" ]; then
+		echo -en "^fg(grey)[$index]^fg()^fg(#3498db) $output^fg() ";
+	else
+		echo -en "^fg(grey)[$index]^fg()^fg(#ffffff) $output^fg() ";
+	fi
+	checkMinimize=$(xprop -id $ppid WM_STATE | grep Normal);	
+	if [ -z $checkMinimize ]; then
+	    echo -en "^i(/home/chaoxifer/Images/icons/icon_minimize.xpm) ";
+	fi
+    done
+    echo ""
+done
