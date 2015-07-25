@@ -1,0 +1,62 @@
+#------------------------- Windows Settings
+# Create own window instead of using desktop (required in nautilus)
+own_window yes
+own_window_type normal
+own_window_transparent no
+own_window_hints undecorated,sticky,below,skip_taskbar,skip_pager
+own_window_colour black
+own_window_class Conky
+own_window_title Simple Default Conky
+own_window_argb_visual yes
+own_window_argb_value 0
+double_buffer yes
+
+#------------------------- Location
+minimum_size 313 165
+maximum_width 313
+gap_x 1252
+gap_y 150
+
+#------------------------- FONT
+use_xft yes
+xftfont Monofur:bold:size=8
+xftalpha 0.8 	# Alpha of Xft font. Must be a value at or between 1 and 0 ###
+override_utf8_locale yes
+draw_shades yes
+default_shade_color black
+draw_outline no
+uppercase no
+
+#------------------------- Colors
+default_color DCDCDC 		#220 220 220	Gainsboro
+
+#------------------------- BORDERS
+draw_borders no
+draw_outline no
+stippled_borders 0
+border_inner_margin 0
+border_outer_margin 0
+border_width 0
+
+draw_graph_borders no
+
+#------------------------- OTHER
+text_buffer_size 256
+use_spacer none
+background no
+use_spacer none
+update_interval 1
+
+lua_load ~/.conkyconfig/lua/net_graph.lua
+lua_draw_hook_pre main_graph
+
+TEXT
+${if_existing /proc/net/route enp8s0}${voffset 25}${GOTO 50}${font}Network
+${GOTO 50}${font}Public ip: ${font Monofur:size=8}${texeci 3600 wget -qO - http://cfajohnson.com/ipaddr.cgi}
+${voffset 85}${GOTO 50}${font}Recieve: ${font Monofur:size=8}${downspeed enp8s0}${GOTO 200}${font}Send: ${font Monofur:size=8}${upspeed enp8s0}
+${image ~/.conkyconfig/img/networkhigh.png -p 0,15 -s 45x45}${else}${if_existing /proc/net/route wlp1s0}${voffset 25}${GOTO 50}${font}Network
+${GOTO 50}${font}Public ip: ${font Monofur:size=8}${texeci 3600 wget -qO - http://cfajohnson.com/ipaddr.cgi}${GOTO 200}${font}Sig: ${font Monofur:size=8}${wireless_link_qual_perc wlp1s0}%
+${voffset 85}${GOTO 50}${font}Recieve: ${font Monofur:size=8}${downspeed wlp1s0}${GOTO 200}${font}Send: ${font Monofur:size=8}${upspeed wlp1s0}
+${if_match "${wireless_link_qual_perc wlp1s0}"<"33"}${image ~/.conkyconfig/img/networklow.png -p 0,15 -s 45x45}${else}${if_match "${wireless_link_qual_perc wlp1s0}"<"66"}${image ~/.conkyconfig/img/networkmid.png -p 0,15 -s 45x45}${else}${image ~/.conkyconfig/img/networkhigh.png -p 0,15 -s 45x45}${endif}${endif}${else}${voffset 27}${GOTO 50}${font}Network
+${GOTO 50}${font}No connection
+${image ~/.conkyconfig/img/nonetwork.png -p 0,15 -s 45x45}${endif}${endif}
