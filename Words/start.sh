@@ -1,4 +1,6 @@
 #!/bin/zsh
+# authored by Sukbeom Kim (chaoxifer@gmail.com)
+
 function check_backupFile {
     echo -n "Check file named 'wordlist-backup'    : "; 
     if [ -f "$PWD/wordlist-backup" ]; then
