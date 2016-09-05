@@ -4,6 +4,8 @@
 // @version     1
 // @grant       none
 // @include     http://www.tvbaduk.com/tv/*
+// @include     http://www.tvbaduk.com/*
+// @include     http://www.tvbaduk.com/common/*
 // ==/UserScript==
 
 start();
@@ -18,5 +20,16 @@ function start() {
     var link = entry[0].href;
     var res = link.replace("mode=1", "mode=0");
     entry[0].href = res;
+  }
+  
+  
+  // 이후 모든 링크에 대해 주소 변경
+  var all_link = document.getElementsByTagName("a");
+  
+  for (var i = 0; i < all_link.length; i++) {
+    var link = all_link[i];
+    var orig = link.href;
+    var res = orig.replace("mode=1", "mode=0");
+    link.href = res;
   }
 }
