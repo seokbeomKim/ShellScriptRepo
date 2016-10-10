@@ -1,0 +1,59 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $udiskoutput = 'udisksctl status';
+my @disk_info = `$udiskoutput`;
+print "@disk_info\n";
+
+my $lsblk_cmd = 'lsblk | sed -e \'/SWAP/d\' | sed -e 1d | tr -s " " | awk {\'print $7\'} | sed -e \'s/ //g\'';
+my @lsblk_except = `$lsblk_cmd`;
+
+$lsblk_cmd = 'lsblk | sed -e \'/SWAP/d\' | sed -e 1d | tr -s " " | awk {\'print $1 "\t" $4 "\t" $6 "\t" $7\'} | sed -e \'/\tdisk/d\' | cut -c 7-';
+my @lsblk_output = `$lsblk_cmd`;
+
+my $index = 0;
+my $list_idx = 1;
+
+my @final_list;
+
+foreach my $line (@lsblk_output)
+{
+   
+   print "\[$list_idx\] $line";
+   $final_list[$list_idx] = $line;
+   $list_idx++;
+}
+
+# Read user's input
+print "Mount the disk of number (1, 2, 3, 4... Ctrl-C to exit): ";
+
+my $num=<STDIN>;
+
+if (!defined($num) or $num eq "\n" or !($num =~ m/^[0-9]+$/)) {
+   print "Nothing has been inputed.\n";
+   exit;
+}
+
+my @tokens = split(/\t/, $final_list[$num]);
+my $target_device = $tokens[0];
+
+print "Is '/dev/$target_device' right? (Y/N)";
+my $okay=<STDIN>;
+
+if ($okay eq "\n" or !($okay =~ m/^[yYnN]$/)) {
+   print "Wrong input.\n";
+   exit
+}
+
+if ($okay =~ m/^[nN]$/) {
+   exit
+}
+
+my $mount_cmd = "udisksctl mount \-b \/dev\/$target_device\n";
+# Execute
+print $mount_cmd;
+`$mount_cmd`;
+
+exit
