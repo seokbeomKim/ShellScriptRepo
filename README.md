@@ -18,3 +18,6 @@ Backup script for Gentoo Linux. (Script from https://blinkeye.ch/dokuwiki/doku.p
 
 ### Words
 Simple bash shell script to memorize words. But you should install ''sdcv'' before starting the script.
+
+### autoblock
+Using iptables, the script is to block script kids accessing to HTTP server.

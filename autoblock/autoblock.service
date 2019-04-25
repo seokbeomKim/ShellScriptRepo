@@ -1,0 +1,8 @@
+[Unit]
+After=httpd.service
+
+[Service]
+ExecStart=/var/log/httpd/autoblock.sh /var/log/httpd/access_log
+
+[Install]
+WantedBy=default.target`
