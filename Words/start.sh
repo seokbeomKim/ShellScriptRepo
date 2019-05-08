@@ -28,7 +28,7 @@ fi
 check_backupFile
 while true;
 do
-    number=$(cat wordlist -n | tail -1 | sed -e 's/ //g'| sed -e 's/[a-z]//g');
+    number=$(cat -n wordlist | tail -1 | sed -e 's/ //g'| sed -e 's/[a-z]//g');
     index=$number;
     echo $RANDOM >/dev/null;
     randnum=$(echo $RANDOM%$index | bc);
