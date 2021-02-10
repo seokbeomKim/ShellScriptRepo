@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# disable second monitor
+xrandr --output eDP1 --auto --output DP2 --off
+
+DISP_NUM=$(xrandr | sed -e /disconnected/d | grep connected | awk '{print $1}' | wc -l)
+
+if [ "$DISP_NUM" -eq "2" ]; then
+    DISPLAYS_TO_ON=$(xrandr | sed '/disconnected/d' | grep -i connected | awk '{print $1}')
+    for disp in $DISPLAYS_TO_ON; do
+	xrandr --output $disp --auto
+    done
+
+    xrandr --output eDP1 --scale 1.0x1.0 --mode 2560x1600 --output DP2 --scale 1.5x1.5 --mode 1920x1080 --pos 2560x0
+fi
+
