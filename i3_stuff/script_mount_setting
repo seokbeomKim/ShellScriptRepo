@@ -26,6 +26,7 @@ function mount_func {
 
     mkdir -p $MOUNT_DIR
     SUDO_ASKPASS=/home/sukbeom/.local/bin/sudo_pass sudo -A mount /dev/$PARTITION /home/sukbeom/mountpoint/$LABEL -o umask=000 && notify-send "$LABEL is mounted at $MOUNT_DIR"
+    urxvt -e ranger ${MOUNT_DIR}
 }
 
 function umount_func {
@@ -54,15 +55,15 @@ function umount_func {
 
 	MOUNT_DIR="/home/sukbeom/mountpoint/$INPUT"
 
-	SUDO_ASKPASS=/home/sukbeom/.local/bin/sudo_pass sudo -A umount $MOUNT_DIR
+	SUDO_ASKPASS=/home/sukbeom/.local/bin/sudo_pass sudo -A umount $MOUNT_DIR && notify-send "$MOUNT_DIR is umounted"
 	rmdir $MOUNT_DIR
     fi
     exit
 }
 
-OPER_TYPE=$(echo -ne "Mount a partition\nUnmount a partition" | dmenu -fn 'Space Mono-8' -p "Mount or umount?" -sb "#27418C" -l 5)
-if [ "$OPER_TYPE" == "Mount a partition" ]; then
+OPER_TYPE=$(echo -ne "mount a partition\nunmount a partition" | dmenu -fn 'Space Mono-8' -p "Mount or umount?" -sb "#27418C")
+if [ "$OPER_TYPE" == "mount a partition" ]; then
     mount_func;
-elif [ "$OPER_TYPE" == "Unmount a partition" ]; then
+elif [ "$OPER_TYPE" == "unmount a partition" ]; then
     umount_func;
 fi
