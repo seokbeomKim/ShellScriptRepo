@@ -3,60 +3,62 @@
 # simple script to
 
 function mount_func {
-    INPUT=$(lsblk --nodeps | sed -e '/^nvme0n1.*./d' | sed -e '1d' | dmenu -fn 'Space Mono-8' -p "Select a disk" -sb "#27418C" -l 10)
+    MOUNTABLE_LIST=$(ls /dev/disk/by-label -Al | awk '{print $9 $11}' | sed '1d' | sort)
+    DEVICE_LIST=()
+    for device in $MOUNTABLE_LIST; do
+        DNODE=$(echo $device | awk 'BEGIN {FS="../../"}; {print $2}')
+        DNAME=$(echo $device | awk 'BEGIN {FS="../../"}; {print $1}')
+        CHECK=$(mount | grep -w $DNODE)
+        if [ "$CHECK" == "" ]; then
+            DEVICE_LIST+=($DNAME)
+        fi
+    done
 
-    if [ -z "$INPUT" ]; then
-	exit
+    if [ "${#DEVICE_LIST[@]}" -eq 0 ]; then
+        echo "There is no mountable partition" | dmenu -fn 'Space Mono-8' -sb "#27418C" -l 10
+    else
+        INPUT=$(printf '%s\n' ${DEVICE_LIST[@]} | sort | dmenu -fn 'Space Mono-8' -p "Select disk to mount:" -sb "#27418C" -l 10)
+
+        if [ -z "$INPUT" ]; then
+            exit
+        fi
+        DNAME=$INPUT
+        DNODE=$(printf '%s\n' $MOUNTABLE_LIST | grep -w $INPUT | awk 'BEGIN {FS="../../"}; {print $2}')
+
+        MOUNT_DIR="/home/sukbeom/mountpoint/$DNAME"
+        mkdir -p $MOUNT_DIR
+
+        SUDO_ASKPASS=/home/sukbeom/.local/bin/sudo_pass sudo -A mount /dev/$DNODE /home/sukbeom/mountpoint/$DNAME -o umask=000 && notify-send "$DNAME is mounted at $MOUNT_DIR"
+        urxvt -e ranger ${MOUNT_DIR}
     fi
-
-    # device node (disk)
-    DEV_NAME=$(echo $INPUT | awk '{print $1}')
-
-    # Now we need to select partition form the disk
-    INPUT=$(lsblk /dev/$DEV_NAME -ipr | sed -e '1d' | sed -e '/disk/d' | sort | dmenu -fn 'Space Mono-8' -p "Select a partition" -sb "#27418C" -l 10)
-
-    if [ -z "$INPUT" ]; then
-	exit
-    fi
-
-    PARTITION=$(echo $INPUT | awk '{print $1}' | sed -e 's/\/dev\///')
-    LABEL=$(ls -al /dev/disk/by-label | grep -w ${PARTITION} | awk '{print $9}')
-
-    MOUNT_DIR="/home/sukbeom/mountpoint/$LABEL"
-
-    mkdir -p $MOUNT_DIR
-    SUDO_ASKPASS=/home/sukbeom/.local/bin/sudo_pass sudo -A mount /dev/$PARTITION /home/sukbeom/mountpoint/$LABEL -o umask=000 && notify-send "$LABEL is mounted at $MOUNT_DIR"
-    urxvt -e ranger ${MOUNT_DIR}
 }
 
 function umount_func {
     MOUNTABLE_LIST=$(ls /dev/disk/by-label -Al | awk '{print $9 $11}' | sed '1d' | sort)
-    printf '%s\n' $MOUNTABLE_LIST
-
     DEVICE_LIST=()
     for device in $MOUNTABLE_LIST; do
-	DNODE=$(echo $device | awk 'BEGIN {FS="../../"}; {print $2}')
-	DNAME=$(echo $device | awk 'BEGIN {FS="../../"}; {print $1}')
+        DNODE=$(echo $device | awk 'BEGIN {FS="../../"}; {print $2}')
+        DNAME=$(echo $device | awk 'BEGIN {FS="../../"}; {print $1}')
 
-	CHECK=$(mount | grep -w $DNODE)
-	if [ "$CHECK" != "" ]; then
-	    DEVICE_LIST+=($DNAME)
-	fi
+        CHECK=$(mount | grep -w $DNODE)
+        if [ "$CHECK" != "" ]; then
+            DEVICE_LIST+=($DNAME)
+        fi
     done
 
     if [ "${#DEVICE_LIST[@]}" -eq 0 ]; then
-	echo "There is no mounted partitions at all" | dmenu -fn 'Space Mono-8' -sb "#27418C" -l 10
+        echo "There is no mounted partitions at all" | dmenu -fn 'Space Mono-8' -sb "#27418C" -l 10
     else
-	INPUT=$(printf '%s\n' ${DEVICE_LIST[@]} | sort | dmenu -fn 'Space Mono-8' -p "Select disk to unmount:" -sb "#27418C" -l 10)
+        INPUT=$(printf '%s\n' ${DEVICE_LIST[@]} | sort | dmenu -fn 'Space Mono-8' -p "Select disk to unmount:" -sb "#27418C" -l 10)
 
-	if [ -z "$INPUT" ]; then
-	    exit
-	fi
+        if [ -z "$INPUT" ]; then
+            exit
+        fi
 
-	MOUNT_DIR="/home/sukbeom/mountpoint/$INPUT"
+        MOUNT_DIR="/home/sukbeom/mountpoint/$INPUT"
 
-	SUDO_ASKPASS=/home/sukbeom/.local/bin/sudo_pass sudo -A umount $MOUNT_DIR && notify-send "$MOUNT_DIR is umounted"
-	rmdir $MOUNT_DIR
+        SUDO_ASKPASS=/home/sukbeom/.local/bin/sudo_pass sudo -A umount $MOUNT_DIR && notify-send "$MOUNT_DIR is umounted"
+        rmdir $MOUNT_DIR
     fi
     exit
 }
