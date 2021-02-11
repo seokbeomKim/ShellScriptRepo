@@ -10,20 +10,20 @@ function mount_func {
         DNAME=$(echo $device | awk 'BEGIN {FS="../../"}; {print $1}')
         CHECK=$(mount | grep -w $DNODE)
         if [ "$CHECK" == "" ]; then
-            DEVICE_LIST+=($DNAME)
+            DEVICE_LIST+=([$DNODE]$DNAME)
         fi
     done
 
     if [ "${#DEVICE_LIST[@]}" -eq 0 ]; then
-        echo "There is no mountable partition" | dmenu -fn 'Space Mono-8' -sb "#27418C" -l 10
+        echo "There is no mountable partition" | rofi -dmenu -theme flat-i3 -font 'Space Mono 12' -sb "#27418C" -l 10
     else
-        INPUT=$(printf '%s\n' ${DEVICE_LIST[@]} | sort | dmenu -fn 'Space Mono-8' -p "Select disk to mount:" -sb "#27418C" -l 10)
+        INPUT=$(printf '%s\n' ${DEVICE_LIST[@]} | sort | rofi -dmenu -theme flat-i3 -font 'Space Mono 12' -p "Select disk to mount:" -sb "#27418C" -l 10)
 
         if [ -z "$INPUT" ]; then
             exit
         fi
-        DNAME=$INPUT
-        DNODE=$(printf '%s\n' $MOUNTABLE_LIST | grep -w $INPUT | awk 'BEGIN {FS="../../"}; {print $2}')
+        DNAME=$(echo $INPUT | sed -e 's/^.*\]//g')
+        DNODE=$(echo $INPUT | sed -e 's/^\[\(.*.\)\].*/\1/g')
 
         MOUNT_DIR="/home/sukbeom/mountpoint/$DNAME"
         mkdir -p $MOUNT_DIR
@@ -40,6 +40,8 @@ function umount_func {
         DNODE=$(echo $device | awk 'BEGIN {FS="../../"}; {print $2}')
         DNAME=$(echo $device | awk 'BEGIN {FS="../../"}; {print $1}')
 
+	echo $DNODE
+	echo $DNAME
         CHECK=$(mount | grep -w $DNODE)
         if [ "$CHECK" != "" ]; then
             DEVICE_LIST+=($DNAME)
@@ -47,7 +49,7 @@ function umount_func {
     done
 
     if [ "${#DEVICE_LIST[@]}" -eq 0 ]; then
-        echo "There is no mounted partitions at all" | dmenu -fn 'Space Mono-8' -sb "#27418C" -l 10
+        echo "There is no mounted partitions at all" | rofi -theme flat-i3 -dmenu -fn 'Space Mono-8' -sb "#27418C" -l 10
     else
         INPUT=$(printf '%s\n' ${DEVICE_LIST[@]} | sort | dmenu -fn 'Space Mono-8' -p "Select disk to unmount:" -sb "#27418C" -l 10)
 
@@ -63,7 +65,7 @@ function umount_func {
     exit
 }
 
-OPER_TYPE=$(echo -ne "mount a partition\nunmount a partition" | dmenu -fn 'Space Mono-8' -p "Mount or umount?" -sb "#27418C")
+OPER_TYPE=$(echo -ne "mount a partition\nunmount a partition" | rofi -theme flat-i3 -dmenu -font 'Space Mono 12' -p "Mount or umount?" -sb "#27418C")
 if [ "$OPER_TYPE" == "mount a partition" ]; then
     mount_func;
 elif [ "$OPER_TYPE" == "unmount a partition" ]; then

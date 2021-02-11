@@ -1,8 +1,8 @@
 #!/bin/bash
 
-NUM_DISPLAY=$(echo -n "Dual Display
-Single Display
-" | dmenu -fn 'Space Mono-8' -p "Select display " -sb "#27418C")
+NUM_DISPLAY=$(echo -n "Single Display
+Dual Display
+" | rofi -font "Bandal 14" -theme sidetab -dmenu -p "Select display " -sb "#27418C")
 
 if [ "$NUM_DISPLAY" == "Dual Display" ]; then
     DISPLAYS_TO_ON=$(xrandr | sed '/disconnected/d' | grep -i connected | awk '{print $1}')
@@ -14,7 +14,7 @@ if [ "$NUM_DISPLAY" == "Dual Display" ]; then
     /usr/bin/feh '/usr/share/backgrounds/warty-final-ubuntu.png' --bg-scale
 
 elif [ "$NUM_DISPLAY" == "Single Display" ]; then
-    SINGLE_DISPLAY=$(xrandr | sed '/disconnected/d' | grep -i connected | awk '{print $1}' | dmenu -fn 'Space Mono-8' -p "Select the monitor " -sb "#27418C")
+    SINGLE_DISPLAY=$(xrandr | sed '/disconnected/d' | grep -i connected | awk '{print $1}' | rofi -font "Bandal 14" -theme sidetab -dmenu -fn 'Space Mono-8' -p "Select the monitor " -sb "#27418C")
     DISPLAYS_TO_OFF=$(xrandr --listmonitors | sed '1d' | awk '{print $4}' | sed -e "/$SINGLE_DISPLAY/d")
 
     for disp in $DISPLAYS_TO_OFF; do
